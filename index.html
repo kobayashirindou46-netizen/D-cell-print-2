@@ -309,7 +309,7 @@ function cleanName(s){
  if(m&&/[A-Za-z]{3}/.test(m[1]))s=m[1];
  var segs=s.split(/\s[-\u2013\u2014|]\s|[|\u2022\u00b7_=<>\[\]{}()\\\/]+|\d[\d\s\-.]{3,}/);
  for(var i=0;i<segs.length;i++){
-  var x=segs[i].replace(/[^A-Za-z .'\-]/g,' ').replace(/\s+/g,' ').trim();
+  var x=fixNm(segs[i]).replace(/[^A-Za-z .'\-]/g,' ').replace(/\s+/g,' ').trim();
   x=x.replace(/^(?:nasabah|bapak|ibu|bpk|tn|ny|nn|sdr|sdri)\b\.?\s+/i,'').replace(/^[\s.\-']+|[\s.\-']+$/g,'').replace(/\s+[a-z]$/,'').replace(/^[a-z]\s+/,'');
   var t=x.split(' ');
   if(t.length>=3&&isStrong(t[t.length-1])){t.pop();x=t.join(' ')}
@@ -368,7 +368,7 @@ function extract(t,tx,opt){
  var a=amt(pick('nominal(?:\\s+transfer)?|jumlah(?:\\s+transfer)?|nilai\\s+transfer|total\\s+tagihan|tagihan|amount|rp\\s*bayar|total\\s+bayar|harga|nominal\\s+top\\s*up'));
  if(a<1000){a=0;(tx.match(/(?:Rp|IDR)\.?\s*[\d.,]+/gi)||[]).forEach(function(x){var n=amt(x);if(n>a&&n<1e10)a=n})}
  if(t==='transfer'){var P=transfer(tx);how=P.how;
-  f.push(['penerima',String(P.penerima||'').toUpperCase(),'penerima'],['norek',P.norek,'no. tujuan'],['tujuan',P.tujuan,'bank'])}
+  f.push(['penerima',fixNm(P.penerima).toUpperCase(),'penerima'],['norek',P.norek,'no. tujuan'],['tujuan',P.tujuan,'bank'])}
  else if(t==='token'){var m=tx.match(/\d(?:[ \-]?\d){19,}/);f.push(['token',m?m[0].replace(/\D/g,'').slice(0,20).replace(/(\d{4})(?=\d)/g,'$1 '):'','token']);
   var mt=pick('no\\.?\\s*meter|nomor\\s+meter|id\\s*pel\\w*|no\\.?\\s*id').replace(/\D/g,'');f.push(['meter',mt.length>=8?mt:'','no meter']);
   var n1=name(tx,['nama pelanggan|nama','name']);how=n1?n1.how:'';f.push(['nm',n1?n1.v:'','nama']);
@@ -380,7 +380,8 @@ function extract(t,tx,opt){
  else{var n2=name(tx,['nama pelanggan|nama','name']);how=n2?n2.how:'';f.push(['nm',n2?n2.v:'','nama']);
   f.push(['idp',pick('no\\.?\\s*pelanggan|id\\s*pel\\w*|no\\.?\\s*id|nomor').replace(/\s/g,''),'no pelanggan'],['periode',pick('periode|bulan'),'periode'],['jenis',pick('jenis|produk|layanan'),'jenis'])}
  return {nominal:a,f:f,how:how}}
-return {extract:extract,transfer:transfer,getLines:getLines,WALLETS:WALLETS}
+function fixNm(s){return String(s||'').replace(/[A-Za-z0-9]+/g,function(w){if(!/[A-Za-z]/.test(w)||!/\d/.test(w))return w;return w.replace(/0/g,'O').replace(/1/g,'I').replace(/5/g,'S').replace(/8/g,'B').replace(/6/g,'G').replace(/2/g,'Z')}).replace(/[|_\\\/\[\]{}()<>~`^*=+;:,"]/g,' ').replace(/\s+/g,' ').trim()}
+return {extract:extract,transfer:transfer,getLines:getLines,WALLETS:WALLETS,fix:fixNm}
 })();
 </script>
 <script>
@@ -410,6 +411,7 @@ async function read(f,t,c){
  if(!r.ok)await fail(r);j=await r.json();
  return parse((j.content||[]).map(function(x){return x.type==='text'?x.text:''}).join(''))}
 // normalisasi hasil AI -> {nominal, f:[[kunci,nilai,label]]}
+function fixNm(s){return String(s||'').replace(/[A-Za-z0-9]+/g,function(w){if(!/[A-Za-z]/.test(w)||!/\d/.test(w))return w;return w.replace(/0/g,'O').replace(/1/g,'I').replace(/5/g,'S').replace(/8/g,'B').replace(/6/g,'G').replace(/2/g,'Z')}).replace(/[|_\\\/\[\]{}()<>~`^*=+;:,"]/g,' ').replace(/\s+/g,' ').trim()}
 function cleanNm(s){return String(s||'').replace(/^\s*(?:nasabah|bapak|ibu|bpk|tn|ny|nn|sdr|sdri)\b\.?\s+/i,'').replace(/\s+/g,' ').trim()}
 function toFields(j,t){var f=[],n=0,num=function(s){return parseInt(String(s||'').replace(/\D/g,''),10)||0},k;
  j=j||{};
@@ -418,7 +420,7 @@ function toFields(j,t){var f=[],n=0,num=function(s){return parseInt(String(s||''
   else if(AIK[t].indexOf(k+' (')<0){continue}
   else if(k==='token'){var d=String(j[k]).replace(/\D/g,'').slice(0,20);f.push([k,d.replace(/(\d{4})(?=\d)/g,'$1 '),k])}
   else if(k==='norek'||k==='meter'||k==='hp')f.push([k,String(j[k]).replace(/[^\d+]/g,''),k]);
-  else if(k==='penerima'||k==='nm')f.push([k,k==='penerima'?String(cleanNm(j[k])||'').toUpperCase():cleanNm(j[k]),k]);
+  else if(k==='penerima'||k==='nm')f.push([k,k==='penerima'?fixNm(cleanNm(j[k])).toUpperCase():cleanNm(j[k]),k]);
   else f.push([k,String(j[k]==null?'':j[k]).trim(),k])}
  return {nominal:n,f:f}}
 return {read:read,toFields:toFields,AIK:AIK,DEFM:DEFM}
@@ -585,14 +587,40 @@ function pick(t){pend=t;$('img').click()}
 $('hTf').onclick=function(){pick('transfer')};$('hTk').onclick=function(){pick('token')};$('hTg').onclick=function(){pick('tagihan')};$('hEw').onclick=function(){pick('ewallet')};$('bPic').onclick=function(){pick(tab)};
 function loadScript(u){return new Promise(function(res,rej){var sc=document.createElement('script');sc.src=u;sc.onload=res;sc.onerror=function(){rej(new Error('memuat '+u.split('/')[2]))};document.head.appendChild(sc)})}
 async function loadOcr(){if(window.Tesseract)return;try{await loadScript('https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.1.1/tesseract.min.js')}catch(e){await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js')}}
-function shrink(f){return new Promise(function(res,rej){var draw=function(im,w,h){var k=Math.min(2,1600/Math.max(w,h)),c=document.createElement('canvas');c.width=Math.round(w*k);c.height=Math.round(h*k);var x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);
+function shrink(f){return new Promise(function(res,rej){var draw=function(im,w,h){var k=Math.min(2.5,2800/Math.max(w,h)),c=document.createElement('canvas');c.width=Math.round(w*k);c.height=Math.round(h*k);var x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);
   var d=x.getImageData(0,0,c.width,c.height),p=d.data,sum=0,n=0,i;for(i=0;i<p.length;i+=64){sum+=p[i]*.3+p[i+1]*.59+p[i+2]*.11;n++}
   if(sum/n<110){for(i=0;i<p.length;i+=4){p[i]=255-p[i];p[i+1]=255-p[i+1];p[i+2]=255-p[i+2]}x.putImageData(d,0,0)}res(c)};
  var via=function(){var fr=new FileReader();fr.onerror=function(){rej(new Error('file tidak bisa dibaca'))};fr.onload=function(){var im=new Image();im.onload=function(){draw(im,im.width,im.height)};im.onerror=function(){rej(new Error('format gambar tidak didukung, pakai PNG/JPG'))};im.src=fr.result};fr.readAsDataURL(f)};
  if(window.createImageBitmap)createImageBitmap(f).then(function(b){draw(b,b.width,b.height)},via);else via()})}
 async function runOcr(img){var lg=function(m){if(m&&m.status)toast((m.status==='recognizing text'?'Membaca ':'Menyiapkan ')+(m.progress?Math.round(m.progress*100)+'%':'...'),1)};
  var opts=[{langPath:'https://cdn.jsdelivr.net/npm/@tesseract.js-data/eng/4.0.0_best_int',logger:lg},{logger:lg}],err;
- for(var i=0;i<opts.length;i++){try{var wk=await Tesseract.createWorker('eng',1,opts[i]);try{await wk.setParameters({tessedit_pageseg_mode:'4'})}catch(e){}var rs=await wk.recognize(img);await wk.terminate();return rs.data.text}catch(e){err=e}}throw err}
+ for(var i=0;i<opts.length;i++){try{var wk=await Tesseract.createWorker('eng',1,opts[i]);try{await wk.setParameters({tessedit_pageseg_mode:'4'})}catch(e){}var rs=await wk.recognize(img);return{text:rs.data.text,data:rs.data,wk:wk}}catch(e){err=e}}throw err}
+
+function ocrWords(d){var w=d&&d.words;if(w&&w.length)return w;w=[];((d&&d.blocks)||[]).forEach(function(b){(b.paragraphs||[]).forEach(function(p){(p.lines||[]).forEach(function(l){(l.words||[]).forEach(function(x){w.push(x)})})})});return w}
+function lev(a,b){var m=a.length,n=b.length,d=[],i,j;for(i=0;i<=m;i++){d[i]=[i]}for(j=1;j<=n;j++)d[0][j]=j;for(i=1;i<=m;i++)for(j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[m][n]}
+// baca ulang HANYA baris nama: potong, perbesar, hitam-putihkan, mode 1 baris, huruf saja
+async function refineName(wk,cv,d,name){
+ var nz=function(x){return String(x).replace(/[^A-Za-z0-9]/g,'').toLowerCase().replace(/0/g,'o').replace(/1/g,'i').replace(/5/g,'s').replace(/8/g,'b').replace(/6/g,'g').replace(/2/g,'z')},ws=ocrWords(d),tk=String(name).split(/\s+/).filter(Boolean),i,j,at=-1;
+ if(!tk.length||!ws.length)return null;
+ for(i=0;i+tk.length<=ws.length&&at<0;i++){var ok=true;for(j=0;j<tk.length;j++){if(nz(ws[i+j].text)!==nz(tk[j])){ok=false;break}}if(ok)at=i}
+ if(at<0)return null;
+ var x0=1e9,y0=1e9,x1=0,y1=0,cs=0;for(j=0;j<tk.length;j++){var b=ws[at+j].bbox;x0=Math.min(x0,b.x0);y0=Math.min(y0,b.y0);x1=Math.max(x1,b.x1);y1=Math.max(y1,b.y1);cs+=ws[at+j].confidence||0}
+ cs/=tk.length;var h=Math.max(8,y1-y0),px=Math.round(h*.6),py=Math.round(h*.5);
+ x0=Math.max(0,x0-px);y0=Math.max(0,y0-py);x1=Math.min(cv.width,x1+px);y1=Math.min(cv.height,y1+py);
+ var k=Math.max(1,Math.min(5,70/h)),w=Math.round((x1-x0)*k),hh=Math.round((y1-y0)*k),pad=24,c=document.createElement('canvas');c.width=w+pad*2;c.height=hh+pad*2;
+ var x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';x.drawImage(cv,x0,y0,x1-x0,y1-y0,pad,pad,w,hh);
+ var im=x.getImageData(0,0,c.width,c.height),p=im.data,lo=255,hi=0,g;for(i=0;i<p.length;i+=4){g=p[i]*.3+p[i+1]*.59+p[i+2]*.11;if(g<lo)lo=g;if(g>hi)hi=g}
+ if(hi-lo>40){for(i=0;i<p.length;i+=4){g=(p[i]*.3+p[i+1]*.59+p[i+2]*.11-lo)*255/(hi-lo);g=g<0?0:g>255?255:g;p[i]=p[i+1]=p[i+2]=g}x.putImageData(im,0,0)}
+ await wk.setParameters({tessedit_pageseg_mode:'7',tessedit_char_whitelist:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz .'-"});
+ var r=await wk.recognize(c),t=String(r.data.text||'').replace(/[^A-Za-z .'\-]/g,' ').replace(/\s+/g,' ').trim(),c2=r.data.confidence||0;
+ if(t.replace(/[^A-Za-z]/g,'').length<2)return null;
+ var a=nz(name),bb=nz(t);if(lev(a,bb)>Math.max(a.length,bb.length)*.5)return null;
+ if(cs>=95&&c2<cs)return null;
+ return t}
+async function refineFill(t,o,cv){var s=S[t],ch=false;
+ for(var q=0,ks=['penerima','nm'];q<ks.length;q++){var k=ks[q];if(!s[k])continue;
+  try{var n=await refineName(o.wk,cv,o.data,s[k]);if(n){n=k==='penerima'?DCParse.fix(n).toUpperCase():n;if(n!==s[k]){s[k]=n;ch=true}}}catch(e){}}
+ if(ch){render();toast('Nama dibaca ulang lebih teliti. Cek lagi ya',0,3000)}}
 function fill(t,tx){var s=S[t],got=[],R=DCParse.extract(t,tx,{});
  if(R.nominal){s.nominal=R.nominal;s.adm=null;got.push('nominal')}
  R.f.forEach(function(x){if(x[1]){s[x[0]]=x[1];got.push(x[2])}});
@@ -614,7 +642,7 @@ async function ai(f,t){var sm=null;try{sm=window.claude&&await window.claude.use
   applyJson(j,t);return true}
  catch(e){if(e&&e.code==='not_granted'){toast('Izin ditolak, pakai pembaca bawaan...',0,2000);return false}toast('Claude gagal ('+((e&&e.code)||'error')+'), pakai pembaca bawaan...',0,2500);return false}}
 async function handleImg(f,t){S[t]=fresh(t);if(t==='transfer')S[t].ref='Transaksi';setTab(t);go('edit');
- try{if(await ai(f,t))return;if(await aiKey(f,t))return;toast('Menyiapkan gambar...',1);var cv=await shrink(f);toast('Memuat OCR...',1);await loadOcr();var tx=await runOcr(cv);fill(t,tx)}
+ try{if(await ai(f,t))return;if(await aiKey(f,t))return;toast('Menyiapkan gambar...',1);var cv=await shrink(f);toast('Memuat OCR...',1);await loadOcr();var o=await runOcr(cv);fill(t,o.text);try{await refineFill(t,o,cv)}finally{try{await o.wk.terminate()}catch(e){}}}
  catch(e){var em=(e&&e.message)||String(e);toast(/Worker|origin|blob|memuat/i.test(em)?'Baca gambar tidak jalan di pratinjau ini. Buka lewat alamat web/Chrome. Isi manual dulu.':'Gagal: '+em,0,5000)}}
 $('img').onchange=function(){var f=this.files&&this.files[0];this.value='';if(!f)return;handleImg(f,pend||tab)};
 // ---- cetak Bluetooth ESC/POS ----
