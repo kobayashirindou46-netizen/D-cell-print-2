@@ -383,6 +383,19 @@ function transfer(tx){
 function name(tx,srcs){var r=labeled(getLines(tx),srcs);return r?r:null}
 
 
+// jumlah kWh: label bisa "Jml kWh", "Jumlah kWh", "Total kWh" atau "12,6 kWh"; angka di baris sama / bawahnya; toleran salah baca
+function kwhTok(str){var re=/(^|[^A-Za-z])([\dOoIl|SsBZz]{1,4}(?:[.,][\dOoIl|SsBZz]{1,3})?)(?![A-Za-z])/g,m,best='';
+ while((m=re.exec(str))){var raw=m[2];if(!/\d/.test(raw)&&!/[.,]/.test(raw))continue;var v=raw.replace(/[Oo]/g,'0').replace(/[Il|]/g,'1').replace(/[Ss]/g,'5').replace(/B/g,'8').replace(/[Zz]/g,'2');
+  var n=parseFloat(v.replace(',','.'));if(n>0&&n<100000&&/^\d+(?:[.,]\d{1,3})?$/.test(v))return v}
+ return best}
+function findKwh(lines){
+ for(var i=0;i<lines.length;i++){var l=lines[i];if(!/kwh/i.test(l)||/\/\s*kwh|\brp\b|harga|tarif|daya/i.test(l))continue;
+  var ix=l.search(/kwh/i),after=l.slice(ix+3),before=l.slice(0,ix),v=kwhTok(after);
+  if(!v&&lines[i+1]&&/^\W*[\dOoIl|SsBZz][\dOoIl|SsBZz.,\s]{0,7}\W*$/.test(lines[i+1]))v=kwhTok(lines[i+1]);
+  if(!v&&/\d/.test(before))v=kwhTok(before);
+  if(v)return v}
+ return ''}
+
 // nomor HP / ID akun e-wallet: toleran salah baca OCR (O->0, I/l->1, S->5, B->8, Z->2), +62 -> 0
 function phoneFrom(str){var m=String(str).match(/\+?[\dOoIl|SsBZz][\dOoIl|SsBZz .\-]{7,18}[\dOoIl|SsBZz]/g)||[];
  for(var i=0;i<m.length;i++){var x=m[i];if((x.match(/\d/g)||[]).length<6)continue;
@@ -405,7 +418,7 @@ function extract(t,tx,opt){
  else if(t==='token'){var m=tx.match(/\d(?:[ \-]?\d){19,}/);f.push(['token',m?m[0].replace(/\D/g,'').slice(0,20).replace(/(\d{4})(?=\d)/g,'$1 '):'','token']);
   var mt=pick('no\\.?\\s*meter|nomor\\s+meter|id\\s*pel\\w*|no\\.?\\s*id').replace(/\D/g,'');f.push(['meter',mt.length>=8?mt:'','no meter']);
   var n1=name(tx,['nama pelanggan|nama','name']);how=n1?n1.how:'';f.push(['nm',n1?n1.v:'','nama']);
-  f.push(['tarif',pick('tarif\\/?\\s*daya|tarif|daya').replace(/\s+/g,' '),'tarif'],['kwh',pick('jml\\s*kwh|jumlah\\s*kwh|kwh').replace(/[^\d.,]/g,''),'kwh'])}
+  f.push(['tarif',pick('tarif\\/?\\s*daya|tarif|daya').replace(/\s+/g,' '),'tarif'],['kwh',findKwh(lines)||pick('jml\\s*kwh|jumlah\\s*kwh|kwh').replace(/[^\d.,]/g,''),'kwh'])}
  else if(t==='ewallet'){f.push(['wallet',findW(pick('e-?wallet|dompet\\s+digital|tujuan|produk|layanan|jenis'))||findW(tx),'e-wallet']);
   var hp=findPhone(lines,tx)||pick('no\\.?\\s*(?:hp|handphone|ponsel|telepon|telp|tujuan)|nomor\\s*(?:hp|handphone|ponsel|telepon|telp|tujuan)|id\\s*(?:akun|pelanggan|pel\\w*)|no\\.?\\s*akun').replace(/[^\d+]/g,'');
   if(hp.length<8){hp='';var h2=tx.match(/(?:\+62|62|0)8[\d\s\-]{8,13}\d/);hp=h2?h2[0].replace(/[^\d+]/g,''):''}
@@ -673,9 +686,26 @@ async function refineNum(wk,cv,d,val){
  if(!/^08\d{8,11}$/.test(n)||n===tg)return null;
  if(lev(n,tg)>3||c2<70||(cs>=95&&c2<cs))return null;
  return n}
+
+async function refineKwh(wk,cv,d,val){
+ var ws=ocrWords(d),tg=String(val).replace(',','.'),a=-1,i;if(!ws.length||!tg)return null;
+ var dg=function(x){return String(x).replace(/[Oo]/g,'0').replace(/[Il|]/g,'1').replace(/[Ss]/g,'5').replace(/B/g,'8').replace(/[Zz]/g,'2').replace(/[^\d.,]/g,'').replace(',','.')};
+ for(i=0;i<ws.length;i++){if(dg(ws[i].text)===tg&&/\d/.test(ws[i].text)){a=i;break}}
+ if(a<0)return null;
+ var q=ws[a].bbox,cs=ws[a].confidence||0,h=Math.max(8,q.y1-q.y0),px=Math.round(h*.6),py=Math.round(h*.5),
+ x0=Math.max(0,q.x0-px),y0=Math.max(0,q.y0-py),x1=Math.min(cv.width,q.x1+px),y1=Math.min(cv.height,q.y1+py),
+ k=Math.max(1,Math.min(5,70/h)),w=Math.round((x1-x0)*k),hh=Math.round((y1-y0)*k),pad=24,c=document.createElement('canvas');c.width=w+pad*2;c.height=hh+pad*2;
+ var x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';x.drawImage(cv,x0,y0,x1-x0,y1-y0,pad,pad,w,hh);
+ var im=x.getImageData(0,0,c.width,c.height),p=im.data,lo=255,hi=0,g;for(i=0;i<p.length;i+=4){g=p[i]*.3+p[i+1]*.59+p[i+2]*.11;if(g<lo)lo=g;if(g>hi)hi=g}
+ if(hi-lo>40){for(i=0;i<p.length;i+=4){g=(p[i]*.3+p[i+1]*.59+p[i+2]*.11-lo)*255/(hi-lo);g=g<0?0:g>255?255:g;p[i]=p[i+1]=p[i+2]=g}x.putImageData(im,0,0)}
+ await wk.setParameters({tessedit_pageseg_mode:'7',tessedit_char_whitelist:'0123456789,.'});
+ var r=await wk.recognize(c),n=String(r.data.text||'').replace(/[^\d.,]/g,'').replace(/^[.,]+|[.,]+$/g,''),c2=r.data.confidence||0;
+ if(!/^\d{1,4}(?:[.,]\d{1,3})?$/.test(n)||n.replace(',','.')===tg)return null;
+ if(lev(n.replace(',','.'),tg)>2||c2<70||(cs>=95&&c2<cs))return null;
+ return String(val).indexOf(',')>=0?n.replace('.',','):n}
 async function refineFill(t,o,cv){var s=S[t],ch=false;
- for(var q=0,ks=['penerima','nm','hp'];q<ks.length;q++){var k=ks[q];if(!s[k])continue;
-  try{var n=k==='hp'?await refineNum(o.wk,cv,o.data,s[k]):await refineName(o.wk,cv,o.data,s[k]);if(n){n=k==='penerima'?DCParse.fix(n).toUpperCase():n;if(n!==s[k]){s[k]=n;ch=true}}}catch(e){}}
+ for(var q=0,ks=['penerima','nm','hp','kwh'];q<ks.length;q++){var k=ks[q];if(!s[k])continue;
+  try{var n=k==='hp'?await refineNum(o.wk,cv,o.data,s[k]):k==='kwh'?await refineKwh(o.wk,cv,o.data,s[k]):await refineName(o.wk,cv,o.data,s[k]);if(n){n=k==='penerima'?DCParse.fix(n).toUpperCase():n;if(n!==s[k]){s[k]=n;ch=true}}}catch(e){}}
  if(ch){render();toast('Data dibaca ulang lebih teliti. Cek lagi ya',0,3000)}}
 function fill(t,tx){var s=S[t],got=[],R=DCParse.extract(t,tx,{});
  if(R.nominal){s.nominal=R.nominal;s.adm=null;got.push('nominal')}
