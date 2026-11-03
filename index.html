@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>D'CELL PRINT</title>
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#2563eb">
+<meta name="theme-color" content="#0d9488">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="icon" type="image/png" href="icon-192.png">
@@ -90,6 +90,113 @@ input[type=range]{width:100%;accent-color:var(--pri2)}
 .bar button b .i{width:28px;height:28px;transition:transform .15s,opacity .15s,filter .15s}.bar button:not(.on) b .i{opacity:.65;filter:saturate(.55)}.bar button.on b .i{transform:scale(1.14)}
 .hero .ic .i{width:40px;height:40px;filter:drop-shadow(0 2px 3px #0004)}.ib .i{width:28px;height:28px}
 #shp{position:fixed;inset:0;background:#0007;z-index:30;display:flex;align-items:flex-end;justify-content:center}.shs{background:var(--surf);width:100%;max-width:520px;border-radius:28px 28px 0 0;padding:22px 18px calc(22px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:10px}.shs h3{margin:0 0 6px;font-size:18px}.shs button{border:0;border-radius:18px;background:#eef2ff;color:var(--pri2);font:inherit;font-weight:700;padding:15px;min-height:50px}.shs button.x{background:none;color:var(--mut)}
+
+/* ---- tampilan baru v14: lebih rapi & segar ---- */
+:root{--bg:#f4f7fd;--surf:#fff;--ink:#0f172a;--mut:#64748b;--line:#e4eaf6;--pri:#4f46e5;--pri2:#4f46e5;--val:#2563eb}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0b1020;--surf:#141a2e;--ink:#e8ecf8;--mut:#9aa6c4;--line:#232b47;--val:#8fb0ff}}
+body{background:var(--bg)}
+header{flex-wrap:wrap;padding:12px 16px 10px;gap:10px;box-shadow:none;border-bottom:1px solid var(--line)}
+.brand{font-size:17px;letter-spacing:.2px}
+.tabs{order:2;flex:1 1 100%;border-radius:14px;padding:3px;gap:2px;overflow:visible}
+.tabs button{flex:1;padding:9px 4px;font-size:13px;border-radius:11px}
+.tabs button.on{background:var(--surf);color:var(--val);box-shadow:0 1px 4px #0f172a22}
+main{padding:16px 16px 170px}
+.hero{background:linear-gradient(135deg,#4f46e5,#0ea5e9);border-radius:28px;padding:22px 20px;box-shadow:0 10px 24px #4f46e540}
+.hero h2{font-size:21px}
+.mini{border-radius:22px;box-shadow:0 1px 2px #0f172a0d}
+.pill{background:var(--surf);border:1px solid var(--line);color:var(--val)}
+.hi{border:1px solid var(--line);border-radius:20px}
+.models{gap:6px;padding:2px 16px 12px}
+.models button{font-size:13px;font-weight:600;padding:9px 15px;min-height:38px;border-radius:12px;border:1px solid var(--line);box-shadow:none}
+.models button.on{background:var(--pri);color:#fff;border-color:var(--pri);box-shadow:0 4px 12px #4f46e540}
+#wallets button{border-radius:99px}
+.paper{box-shadow:0 10px 30px #0f172a30}
+.hint{font-size:12px;font-weight:500;padding:6px 12px;background:none;border:0;color:var(--mut)}
+.acts button{border:1px solid var(--line);border-radius:14px;color:var(--val)}
+.acts button:first-child{background:var(--pri);border-color:var(--pri);color:#fff}
+.bar{left:16px;right:16px;border-radius:22px;padding:6px;border:1px solid var(--line);box-shadow:0 8px 24px #0f172a22}
+.bar button{flex:1;padding:6px 8px;min-height:46px;border-radius:16px}
+.bar button.on{background:#4f46e51f;color:var(--val)}
+.bar button b .i{width:24px;height:24px}
+.card{border:1px solid var(--line);border-radius:20px}
+
+/* ---- tema hijau tosca v15 ---- */
+:root{--bg:#f0faf8;--surf:#fff;--ink:#0b1f1d;--mut:#5b7672;--line:#d6ebe7;--pri:#0d9488;--pri2:#0f766e;--val:#0f766e}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0a1514;--surf:#10201f;--ink:#e6f4f1;--mut:#93b0ab;--line:#1f3533;--val:#5eead4}}
+.brand{background:linear-gradient(90deg,#0d9488,#10b981);-webkit-background-clip:text;background-clip:text}
+.hero{background:linear-gradient(135deg,#0f766e,#14b8a6);box-shadow:0 10px 24px #0d948855}
+.paper{--val:#0f766e}
+.paper .v,.paper .tok,.paper .nom .v{border-bottom-color:#5eead4}
+.v:focus{background:#ccfbf1}
+.wm{color:#0d94881c}
+.models button.on{box-shadow:0 4px 12px #0d948855}
+.bar button.on{background:#0d94882a}
+.two button,.add,.shs button,.hi .ib{background:color-mix(in srgb,var(--pri) 14%,var(--surf))}
+.shs button.x{background:none}
+.hi .ib,.shs button{color:var(--pri2)}
+.save{box-shadow:0 8px 20px #0d948855}
+
+/* ---- gaya modern minimalis v16 ---- */
+:root{--bg:#fafbfb;--surf:#fff;--ink:#0f1a19;--mut:#6b7a78;--line:#e8eceb}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0c1110;--surf:#121817;--ink:#e9f1ef;--mut:#8a9b98;--line:#222b29}}
+header{padding:14px 18px 0;gap:0;border-bottom:1px solid var(--line);background:var(--surf)}
+.brand{font-size:15px;font-weight:700;letter-spacing:.4px;padding-bottom:12px;background:none;color:var(--pri2);-webkit-text-fill-color:currentColor}
+.tabs{background:none;padding:0;border-radius:0;gap:0;margin:0 -4px}
+.tabs button{border-radius:0;padding:11px 4px;font-size:13px;font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button.on{background:none;box-shadow:none;color:var(--pri2);font-weight:700;border-bottom-color:var(--pri)}
+main{padding:20px 18px 130px}
+.hero{background:var(--pri);border-radius:20px;box-shadow:none;padding:22px 20px}
+.hero .ic{background:#ffffff26;border-radius:16px;padding:12px}
+.hero h2{font-size:20px;font-weight:700}
+.mini,.hi,.card{box-shadow:none;border:1px solid var(--line);border-radius:16px}
+.mini b{font-size:15px}
+.pill{border-radius:12px;font-weight:600;background:none}
+.models{gap:6px;padding:0 18px 14px;margin:0 -18px}
+.models button{border-radius:8px;font-weight:500;background:var(--surf);padding:8px 14px;min-height:36px}
+.models button.on{background:var(--pri);box-shadow:none;font-weight:600}
+#wallets button{border-radius:8px}
+.paper{box-shadow:0 1px 3px #0000001a,0 8px 24px #0000000f}
+.hint{font-size:12px;color:var(--mut)}
+.acts button{border-radius:12px;font-weight:600;background:var(--surf)}
+.acts button:first-child{background:var(--pri);color:#fff}
+.bar{left:0;right:0;bottom:0;max-width:none;margin:0;border-radius:0;border:0;border-top:1px solid var(--line);box-shadow:none;padding:6px 12px calc(6px + env(safe-area-inset-bottom,0px))}
+.bar button{border-radius:12px;font-weight:500;font-size:11.5px}
+.bar button.on{background:none;color:var(--pri2);font-weight:700}
+.bar button b .i{width:22px;height:22px}
+#toast{bottom:90px;border-radius:12px}
+.save{border-radius:14px;box-shadow:none;background:var(--pri)}
+.two button,.add,.shs button{border-radius:12px}
+
+/* ---- simpel v17 ---- */
+.list{margin:0 0 8px}
+.row{display:flex;align-items:center;gap:14px;width:100%;background:none;border:0;border-bottom:1px solid var(--line);padding:14px 2px;text-align:left;color:var(--ink);font:inherit}
+.row b{display:block;font-size:16px;font-weight:600}.row small{display:block;color:var(--mut);margin-top:2px}
+.row::after{content:"›";margin-left:auto;color:var(--mut);font-size:22px}
+.row .ib,.hi .ib{width:44px;height:44px;border-radius:12px;background:color-mix(in srgb,var(--pri) 10%,var(--surf))}
+.hi{border:0;border-bottom:1px solid var(--line);border-radius:0;background:none;padding:12px 2px;margin:0}
+#home h3{font-size:12px!important;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--mut);margin:22px 2px 6px!important}
+#hMan{border:0;background:none;color:var(--mut);font-weight:500;padding:8px;margin:6px 0}
+.hint{display:none}
+#bPrint2{background:none;border:0;color:var(--mut);font-weight:500;font-size:13px;text-decoration:underline}
+.acts button:not(:first-child){border:0;background:none}
+.paper{--wmx:0}.wm{display:none}
+
+/* ---- kotak-kotak v18 ---- */
+
+.list{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row{flex-direction:column;align-items:flex-start;gap:12px;padding:16px;min-height:128px;background:var(--surf);border:1px solid var(--line)}
+.row::after{display:none}
+.row b{font-size:15px}.row small{font-size:12px}
+.row:active,.models button:active,.acts button:active{background:color-mix(in srgb,var(--pri) 12%,var(--surf))}
+.models button,.mini,.card,input[type=text],input[type=tel],select{border:1px solid var(--line)}
+.models button.on{border-color:var(--pri)}
+.acts button:not(:first-child){border:1px solid var(--line);background:var(--surf)}
+
+/* ---- sudut tumpul halus v19 ---- */
+.row,.mini,.card,.acts button,.models button,#wallets button,.two button,.add,.save,input[type=text],input[type=tel],select,.shs button,.pill,#toast,.back{border-radius:10px}
+.ib,.row .ib,.hi .ib{border-radius:8px}
+.hi,.tabs button,.bar,.bar button{border-radius:0}
+.shs{border-radius:16px 16px 0 0}
 </style></head><body><svg xmlns="http://www.w3.org/2000/svg" style="display:none">
 <symbol id="i-image" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></symbol>
 <symbol id="i-zap" viewBox="0 0 24 24"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></symbol>
@@ -113,9 +220,11 @@ input[type=range]{width:100%;accent-color:var(--pri2)}
 <header><div class="brand">D'CELL PRINT</div>
 <div class="tabs" id="tabs"><button data-t="transfer" class="on">Transfer</button><button data-t="token">Token</button><button data-t="tagihan">Tagihan</button><button data-t="ewallet">E-Wallet</button></div></header>
 <main id="home">
-<button class="hero" id="hTf"><div><h2>Cetak Bukti Transfer</h2><p>Pilih bukti transfer dari galeri, ubah menjadi struk.</p></div><span class="ic"><svg class="i" aria-hidden="true"><use href="#c-chest"/></svg></span></button>
-<div class="g2"><button class="mini" id="hTk"><span class="ib" style="background:#fff7e0"><svg class="i" aria-hidden="true"><use href="#c-bolt"/></svg></span><b>Token Listrik</b><small>Upload bukti PLN</small></button><button class="mini" id="hTg"><span class="ib" style="background:#fef3c7"><svg class="i" aria-hidden="true"><use href="#c-scroll"/></svg></span><b>Cetak Tagihan</b><small>Upload struk tagihan</small></button></div>
-<button class="mini" id="hEw" style="margin-top:12px;flex-direction:row;align-items:center;gap:14px;width:100%"><span class="ib" style="background:#d1fae5"><svg class="i" aria-hidden="true"><use href="#c-wallet"/></svg></span><span style="display:flex;flex-direction:column"><b style="margin-top:0">Top Up E-Wallet</b><small>DANA, OVO, GoPay, ShopeePay, LinkAja</small></span></button>
+<div class="list"><button class="row" id="hTf"><span class="ib"><svg class="i" aria-hidden="true"><use href="#c-chest"/></svg></span><span><b>Bukti Transfer</b><small>Struk dari bukti transfer bank</small></span></button>
+<button class="row" id="hTk"><span class="ib"><svg class="i" aria-hidden="true"><use href="#c-bolt"/></svg></span><span><b>Token Listrik</b><small>Struk token PLN</small></span></button>
+<button class="row" id="hTg"><span class="ib"><svg class="i" aria-hidden="true"><use href="#c-scroll"/></svg></span><span><b>Tagihan</b><small>Struk tagihan & pembayaran</small></span></button>
+<button class="row" id="hEw"><span class="ib"><svg class="i" aria-hidden="true"><use href="#c-wallet"/></svg></span><span><b>Top Up E-Wallet</b><small>DANA, OVO, GoPay, ShopeePay</small></span></button>
+</div>
 <div class="ctr" style="text-align:center"><button class="pill" id="hMan"><svg class="i" aria-hidden="true"><use href="#i-pencil"/></svg> Isi manual tanpa gambar</button></div>
 <h3 style="margin:8px 4px 12px;font-size:19px">Riwayat Cetak</h3><div id="hist"></div></main>
 <main id="edit" hidden><div class="models" id="wallets" hidden aria-label="Pilih e-wallet"></div><div class="models" id="models" role="tablist" aria-label="Model struk"></div><div class="paper" id="paper"></div><span class="hint"><svg class="i" aria-hidden="true"><use href="#i-up"/></svg> Ketuk nilai biru pada struk untuk mengedit</span>
@@ -143,6 +252,7 @@ input[type=range]{width:100%;accent-color:var(--pri2)}
 </div>
 <div class="card"><h3>Biaya Admin</h3>
  <div class="sw"><span>Tampilkan Biaya Admin</span><input type="checkbox" id="adminOn"></div>
+ <div class="sw"><span>Pengirim = nama penerima (saat baca gambar transfer)</span><input type="checkbox" id="samaNama"></div>
  <label>Tipe Biaya Admin</label><select id="aType"><option value="tier">Admin Bertingkat (Otomatis)</option><option value="fixed">Nominal Tetap</option><option value="pct">Persen dari Nominal</option></select>
  <div id="aFixed" hidden><label>Biaya Tetap (Rp)</label><input type="tel" class="money" id="fixed" inputmode="numeric" placeholder="5.000"></div>
  <div id="aPct" hidden><label>Persen (%)</label><input type="tel" id="pct" inputmode="decimal" placeholder="1"></div>
@@ -156,7 +266,7 @@ input[type=range]{width:100%;accent-color:var(--pri2)}
 <script>
 (function(){
 var $=function(i){return document.getElementById(i)};
-var DEF={logo:'',logoSize:100,nama:"D'CELL",sub:'Pusat Layanan Digital',fToko:'1.3',fIsi:'13',alamat:'',footer:'',adminOn:true,aType:'tier',fixed:0,pct:1,lebar:'384',tebal:'1',model:'standar',
+var DEF={samaNama:true,logo:'',logoSize:100,nama:"D'CELL",sub:'Pusat Layanan Digital',fToko:'1.3',fIsi:'13',alamat:'',footer:'',adminOn:true,aType:'tier',fixed:0,pct:1,lebar:'384',tebal:'1',model:'standar',
  rules:[{min:1,max:500000,fee:5000},{min:500001,max:2000000,fee:10000},{min:2000001,max:0,fee:30000}]};
 var mem={};function ld(k,d){try{var v=localStorage.getItem(k);if(v)return JSON.parse(v)}catch(e){if(mem[k])return mem[k]}return d}
 function st(k,v){mem[k]=v;try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
@@ -270,13 +380,14 @@ function drawRules(){var b=$('rules');b.innerHTML='';
   var x=document.createElement('button');x.innerHTML='<svg class="i" aria-hidden="true"><use href="#i-x"/></svg>';x.setAttribute('aria-label','Hapus aturan');x.onclick=function(){cfg.rules.splice(i,1);drawRules();saveCfg()};d.appendChild(x);b.appendChild(d)})}
 function drawSet(){
  ['nama','sub','alamat','footer'].forEach(function(k){$(k).value=cfg[k]||''});
- $('fToko').value=cfg.fToko;$('fIsi').value=cfg.fIsi;$('adminOn').checked=cfg.adminOn;$('aType').value=cfg.aType;
+ $('fToko').value=cfg.fToko;$('fIsi').value=cfg.fIsi;$('adminOn').checked=cfg.adminOn;$('samaNama').checked=!!cfg.samaNama;$('aType').value=cfg.aType;
  $('fixed').value=cfg.fixed?cfg.fixed.toLocaleString('id-ID'):'';$('pct').value=cfg.pct;
  drawLogo();drawRules();vis()}
 function vis(){var on=cfg.adminOn;['aType'].forEach(function(i){$(i).parentNode.style.opacity=on?1:.5});
  $('aTier').hidden=cfg.aType!=='tier';$('aFixed').hidden=cfg.aType!=='fixed';$('aPct').hidden=cfg.aType!=='pct'}
 ['nama','sub','alamat','footer'].forEach(function(k){$(k).oninput=function(){cfg[k]=this.value;saveCfg()}});
 ['fToko','fIsi'].forEach(function(k){$(k).onchange=function(){cfg[k]=this.value;saveCfg()}});
+$('samaNama').onchange=function(){cfg.samaNama=this.checked;saveCfg()};
 $('adminOn').onchange=function(){cfg.adminOn=this.checked;vis();saveCfg()};
 $('aType').onchange=function(){cfg.aType=this.value;vis();saveCfg()};
 $('fixed').oninput=function(){fmtM(this);cfg.fixed=num(this.value);saveCfg()};
@@ -330,6 +441,7 @@ function fill(t,tx){var s=S[t],got=[],lines=tx.split(/\n/).map(function(x){retur
   set('penerima',pn.length>=3?pn:'','penerima');set('pengirim',pg.length>=3?pg:'','pengirim');
   var rk=pick('rekening\\s+tujuan|no\\.?\\s*rekening|nomor\\s+rekening|no\\.?\\s*rek|no\\.?\\s*tujuan').replace(/\D/g,'');if(rk.length<8){var r2=tx.match(/(?:rek\w*|account)[^\d\n]*(\d{8,})/i);rk=r2?r2[1]:''}
   set('norek',rk.length>=8?rk:'','no. tujuan');set('tujuan',(findIn(pick('bank\\s+tujuan|bank\\s+penerima|tujuan'))||findIn(tx)).toUpperCase().replace(/^(?=[A-Z]{2,5}$)/,'BANK '),'bank');
+  if(cfg.samaNama&&s.penerima){s.pengirim=s.penerima;got.push('pengirim=penerima')}
   set('sumber',findIn(pick('sumber\\s+dana|bank\\s+pengirim|bank\\s+asal|dari')).toUpperCase(),'sumber')}
  else if(t==='token'){var m=tx.match(/\d(?:[ \-]?\d){19,}/);if(m)set('token',m[0].replace(/\D/g,'').slice(0,20).replace(/(\d{4})(?=\d)/g,'$1 '),'token');
   var mt=pick('no\\.?\\s*meter|nomor\\s+meter|id\\s*pel\\w*|no\\.?\\s*id').replace(/\D/g,'');set('meter',mt.length>=8?mt:'','no meter');
@@ -354,6 +466,7 @@ async function ai(f,t){var sm=null;try{sm=window.claude&&await window.claude.use
    else if(k==='token'){var d=String(j[k]).replace(/\D/g,'').slice(0,20);if(d)set('token',d.replace(/(\d{4})(?=\d)/g,'$1 '),'token')}
    else if(k==='norek'||k==='meter'||k==='hp')set(k,String(j[k]).replace(/[^\d+]/g,''));
    else if(AIK[t].indexOf(k+' (')>=0)set(k,j[k])});
+  if(t==='transfer'&&cfg.samaNama&&s.penerima){s.pengirim=s.penerima;got.push('pengirim=penerima')}
   render();toast(got.length?'Terisi: '+got.join(', ')+'. Cek lagi ya':'Tidak ada data terbaca, isi manual',0,3500);return true}
  catch(e){if(e&&e.code==='not_granted'){toast('Izin ditolak, pakai pembaca bawaan...',0,2000);return false}toast('Claude gagal ('+((e&&e.code)||'error')+'), pakai pembaca bawaan...',0,2500);return false}}
 async function handleImg(f,t){S[t]=fresh(t);if(t==='transfer')S[t].ref='Transaksi';setTab(t);go('edit');
