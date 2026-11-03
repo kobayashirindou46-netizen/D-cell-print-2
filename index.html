@@ -358,7 +358,7 @@ function extract(t,tx,opt){
  var a=amt(pick('nominal(?:\\s+transfer)?|jumlah(?:\\s+transfer)?|nilai\\s+transfer|total\\s+tagihan|tagihan|amount|rp\\s*bayar|total\\s+bayar|harga|nominal\\s+top\\s*up'));
  if(a<1000){a=0;(tx.match(/(?:Rp|IDR)\.?\s*[\d.,]+/gi)||[]).forEach(function(x){var n=amt(x);if(n>a&&n<1e10)a=n})}
  if(t==='transfer'){var P=transfer(tx);how=P.how;
-  f.push(['penerima',P.penerima,'penerima'],['norek',P.norek,'no. tujuan'],['tujuan',P.tujuan,'bank'],['sumber',P.sumber,'sumber'])}
+  f.push(['penerima',P.penerima,'penerima'],['norek',P.norek,'no. tujuan'],['tujuan',P.tujuan,'bank'])}
  else if(t==='token'){var m=tx.match(/\d(?:[ \-]?\d){19,}/);f.push(['token',m?m[0].replace(/\D/g,'').slice(0,20).replace(/(\d{4})(?=\d)/g,'$1 '):'','token']);
   var mt=pick('no\\.?\\s*meter|nomor\\s+meter|id\\s*pel\\w*|no\\.?\\s*id').replace(/\D/g,'');f.push(['meter',mt.length>=8?mt:'','no meter']);
   var n1=name(tx,['nama pelanggan|nama','name']);how=n1?n1.how:'';f.push(['nm',n1?n1.v:'','nama']);
@@ -375,7 +375,7 @@ return {extract:extract,transfer:transfer,getLines:getLines,WALLETS:WALLETS}
 </script>
 <script>
 var DCAI=(function(){
-var AIK={transfer:'penerima (nama pemilik rekening tujuan / nama penerima saja, tanpa kata sapaan atau label seperti Nasabah, Bapak, Ibu, Tn, Ny), nominal (jumlah transfer, angka bulat tanpa titik, tanpa biaya admin), norek (nomor rekening/tujuan, hanya angka), tujuan (nama bank tujuan, mis. BANK BCA), sumber (bank/aplikasi sumber dana, mis. FLIP, BRI)',
+var AIK={transfer:'penerima (nama pemilik rekening tujuan / nama penerima saja, tanpa kata sapaan atau label seperti Nasabah, Bapak, Ibu, Tn, Ny), nominal (jumlah transfer, angka bulat tanpa titik, tanpa biaya admin), norek (nomor rekening/tujuan, hanya angka), tujuan (nama bank tujuan, mis. BANK BCA)',
  token:'token (20 digit token listrik, hanya angka), meter (nomor meter/ID pelanggan, hanya angka), nm (nama pelanggan), tarif (tarif/daya, mis. R1/900VA), kwh (jumlah kWh), nominal (nominal pembelian, angka bulat)',
  tagihan:'jenis (jenis tagihan, mis. PDAM/BPJS), idp (nomor pelanggan), nm (nama pelanggan), periode (periode tagihan), nominal (total tagihan, angka bulat)',
  ewallet:'wallet (nama e-wallet tujuan, salah satu: DANA, OVO, GoPay, ShopeePay, LinkAja, iSaku), hp (nomor HP/ID akun tujuan, hanya angka), nm (nama pemilik akun), nominal (nominal top up, angka bulat tanpa biaya admin)'};
@@ -424,7 +424,7 @@ function st(k,v){mem[k]=v;try{localStorage.setItem(k,JSON.stringify(v))}catch(e)
 var cfg=Object.assign({},DEF,ld('struk.cfg',{}));if(cfg.nama==='NAMA TOKO ANDA')cfg.nama=DEF.nama;
 var tab='transfer';
 var TPL={
- transfer:{title:'',secs:[[['ref','No Ref','t']],[['sumber','Sumber','t']],[['penerima','Penerima','t'],['tujuan','Tujuan','t'],['norek','No Tujuan','t']]],nominal:'NOMINAL TRANSFER',total:'TOTAL BAYAR'},
+ transfer:{title:'',secs:[[['ref','No Ref','t']],[['penerima','Penerima','t'],['tujuan','Bank','t'],['norek','No Rek','t']]],nominal:'NOMINAL TRANSFER',total:'TOTAL BAYAR'},
  token:{title:'STRUK TOKEN LISTRIK',secs:[[['meter','NO METER/ID','t'],['nm','NAMA','t'],['tarif','TARIF/DAYA','t'],['kwh','JML KWH','t']]],nominal:'NOMINAL',inline:1,total:'TOTAL',token:1,info:'Informasi hubungi call center 123 atau hub PLN terdekat'},
  tagihan:{title:'STRUK TAGIHAN',secs:[[['jenis','JENIS','t'],['idp','NO PELANGGAN','t'],['nm','NAMA','t'],['periode','PERIODE','t']]],nominal:'TAGIHAN',inline:1,total:'TOTAL'},
  ewallet:{title:'STRUK TOP UP E-WALLET',secs:[[['wallet','E-WALLET','t'],['hp','NO HP/ID AKUN','t'],['nm','NAMA AKUN','t']]],nominal:'NOMINAL TOP UP',inline:1,total:'TOTAL'}};
@@ -477,7 +477,7 @@ function render(){
   B.g.forEach(function(grp){grp.forEach(function(x){
    var v=x[1]==='total'?tv:(!x[1]||x[1]==='nota')?'<span>'+esc(x[2])+'</span>':ed(x[1],x[2],x[0].toLowerCase());
    h+='<div class="kv'+(x[3]?' b':'')+'"><span>'+x[0]+'</span><span>:</span>'+v+'</div>'});h+='<div class="gap"></div>'});
-  h+='<div class="foot"><p>'+esc(cfg.footer||'Terima Kasih')+'</p><div class="gap"></div><p>SALINAN - VIA '+esc(cfg.nama||'')+'</p></div>';
+  h+='<div class="foot"><p>'+esc(cfg.footer||'Terima Kasih')+'</p><div class="gap"></div><p>Melayani Sepenuh Hati</p></div>';
   p.style.setProperty('--lw',B.lw)}
  else{
   h+=hd;
@@ -496,7 +496,7 @@ function render(){
   h+='<div class="foot">';if(T.info&&m!=='compact')h+='<p>'+T.info+'</p>';
   if(m==='compact')h+='<p><b>'+esc(cfg.footer||'Terima kasih')+'</b></p>';
   else{h+='<p>Simpan struk ini sebagai bukti pembayaran yang sah.</p>';if(cfg.footer)h+='<p><b>'+esc(cfg.footer)+'</b></p>'}
-  h+='</div>'}
+  h+='<p>Melayani Sepenuh Hati</p></div>'}
  p.innerHTML=h;p.style.fontSize=cfg.fIsi+'px';
  document.querySelectorAll('#models button').forEach(function(b){b.classList.toggle('on',b.dataset.m===m)});chips()}
 (function(){var b=$('models');MODELS.forEach(function(m){var e=document.createElement('button');e.type='button';e.textContent=m[1];e.dataset.m=m[0];e.setAttribute('role','tab');
@@ -614,7 +614,7 @@ function lines(){var T=TPL[tab],s=S[tab],n=s.nominal,a=admin(n,s),o=[],m=mdl(),U
   o.push({k:'logo'});C(U(cfg.nama||''),1,+cfg.fToko*(m==='compact'?.85:1));if(cfg.sub)C(U(cfg.sub));if(cfg.alamat)C(U(cfg.alamat),0,.85);
   if(m==='bank'){var B=bankRows();G();C(B.title,1);
    B.g.forEach(function(grp){grp.forEach(function(x){o.push({k:'kv',l:x[0],r:U(x[2]),b:x[3],n:B.lw})});G()});
-   C(U(cfg.footer||'Terima Kasih'));G();C('SALINAN - VIA '+U(cfg.nama||''));return o}
+   C(U(cfg.footer||'Terima Kasih'));G();C(U('Melayani Sepenuh Hati'));return o}
   if(m==='modern'){if(T.title)C(T.title,1);H();C('[ BERHASIL ]',1);C(T.nominal,0,.85);C(rp(n),1,1.8);H()}
   else{H();if(T.title)C(T.title,1)}
   P('No Nota',s.nota,1);P('Waktu',s.waktu);
@@ -624,7 +624,7 @@ function lines(){var T=TPL[tab],s=S[tab],n=s.nominal,a=admin(n,s),o=[],m=mdl(),U
   if(T.token){H(5);C('STROOM/TOKEN:',1);C(s.token||'XXXX XXXX XXXX XXXX XXXX',1,1.4);H(5)}else H();
   if(T.info&&m!=='compact')C(T.info);
   if(m==='compact')C(cfg.footer||'Terima kasih',1);else{C('Simpan struk ini sebagai bukti pembayaran yang sah.');if(cfg.footer)C(cfg.footer,1)}
-  return o}
+  C('Melayani Sepenuh Hati');return o}
 async function paint(W,lv,wmk){var img=null;if(cfg.logo)img=await new Promise(function(r){var i=new Image();i.onload=function(){r(i)};i.onerror=function(){r(null)};i.src=cfg.logo});
  var M=mdl(),lhK=M==='compact'?1.08:1.25,hs=M==='compact'?8:12,FAM=M==='modern'?'"Helvetica Neue",Arial,sans-serif':'"Courier New",monospace',fs=W/19.2*cfg.fIsi/13,L=lines(),lvl=lv!=null?lv:(+cfg.tebal||0);
  function run(x,dr){var y=8;var T=function(t,xx,yy){x.fillText(t,xx,yy);if(lvl){x.lineWidth=.5*lvl;x.strokeStyle='#000';x.lineJoin='round';x.strokeText(t,xx,yy)}};
