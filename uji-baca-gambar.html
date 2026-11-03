@@ -153,7 +153,7 @@ function extract(t,tx,opt){
  var a=amt(pick('nominal(?:\\s+transfer)?|jumlah(?:\\s+transfer)?|nilai\\s+transfer|total\\s+tagihan|tagihan|amount|rp\\s*bayar|total\\s+bayar|harga|nominal\\s+top\\s*up'));
  if(a<1000){a=0;(tx.match(/(?:Rp|IDR)\.?\s*[\d.,]+/gi)||[]).forEach(function(x){var n=amt(x);if(n>a&&n<1e10)a=n})}
  if(t==='transfer'){var P=transfer(tx);how=P.how;
-  f.push(['penerima',P.penerima,'penerima'],['norek',P.norek,'no. tujuan'],['tujuan',P.tujuan,'bank'],['sumber',P.sumber,'sumber'])}
+  f.push(['penerima',P.penerima,'penerima'],['norek',P.norek,'no. tujuan'],['tujuan',P.tujuan,'bank'])}
  else if(t==='token'){var m=tx.match(/\d(?:[ \-]?\d){19,}/);f.push(['token',m?m[0].replace(/\D/g,'').slice(0,20).replace(/(\d{4})(?=\d)/g,'$1 '):'','token']);
   var mt=pick('no\\.?\\s*meter|nomor\\s+meter|id\\s*pel\\w*|no\\.?\\s*id').replace(/\D/g,'');f.push(['meter',mt.length>=8?mt:'','no meter']);
   var n1=name(tx,['nama pelanggan|nama','name']);how=n1?n1.how:'';f.push(['nm',n1?n1.v:'','nama']);
@@ -171,7 +171,7 @@ return {extract:extract,transfer:transfer,getLines:getLines,WALLETS:WALLETS}
 </script>
 <script>
 var DCAI=(function(){
-var AIK={transfer:'penerima (nama pemilik rekening tujuan / nama penerima saja, tanpa kata sapaan atau label seperti Nasabah, Bapak, Ibu, Tn, Ny), nominal (jumlah transfer, angka bulat tanpa titik, tanpa biaya admin), norek (nomor rekening/tujuan, hanya angka), tujuan (nama bank tujuan, mis. BANK BCA), sumber (bank/aplikasi sumber dana, mis. FLIP, BRI)',
+var AIK={transfer:'penerima (nama pemilik rekening tujuan / nama penerima saja, tanpa kata sapaan atau label seperti Nasabah, Bapak, Ibu, Tn, Ny), nominal (jumlah transfer, angka bulat tanpa titik, tanpa biaya admin), norek (nomor rekening/tujuan, hanya angka), tujuan (nama bank tujuan, mis. BANK BCA)',
  token:'token (20 digit token listrik, hanya angka), meter (nomor meter/ID pelanggan, hanya angka), nm (nama pelanggan), tarif (tarif/daya, mis. R1/900VA), kwh (jumlah kWh), nominal (nominal pembelian, angka bulat)',
  tagihan:'jenis (jenis tagihan, mis. PDAM/BPJS), idp (nomor pelanggan), nm (nama pelanggan), periode (periode tagihan), nominal (total tagihan, angka bulat)',
  ewallet:'wallet (nama e-wallet tujuan, salah satu: DANA, OVO, GoPay, ShopeePay, LinkAja, iSaku), hp (nomor HP/ID akun tujuan, hanya angka), nm (nama pemilik akun), nominal (nominal top up, angka bulat tanpa biaya admin)'};
@@ -217,7 +217,7 @@ var $=function(i){return document.getElementById(i)};
 var EX=["Transfer Berhasil\n12 Maret 2025 14:32 WIB\nSumber Dana\nBUDI SANTOSO\nBRI - 0123 01 123456 50 3\nTujuan\nSITI AMINAH\nBCA - 1234567890\nNominal\nRp500.000",
 "Nama Penerima : AHMAD FAUZI\nBank Tujuan : BANK MANDIRI\nNo Rekening : 1234567890123\nNominal Transfer : Rp 1.000.000",
 "Transfer Berhasil\nRp 75.000\nDANA PUTRA\nBSI - 7123456789\n12 Mar 2025 10:20"];
-var FIELDS={transfer:[['penerima','Nama Penerima'],['norek','No Tujuan'],['tujuan','Bank Tujuan'],['sumber','Sumber']],
+var FIELDS={transfer:[['penerima','Nama Penerima'],['norek','No Rek'],['tujuan','Bank']],
  token:[['nm','Nama'],['meter','No Meter'],['tarif','Tarif/Daya'],['kwh','Jml kWh'],['token','Token']],
  tagihan:[['nm','Nama'],['idp','No Pelanggan'],['jenis','Jenis'],['periode','Periode']],
  ewallet:[['wallet','E-Wallet'],['hp','No HP/ID'],['nm','Nama Akun']]};
