@@ -408,11 +408,15 @@ $('bPrint').onclick=btPrint;$('bPrint2').onclick=sysPrint;
 $('tebal').value=cfg.tebal;$('tebal').onchange=function(){cfg.tebal=this.value;saveCfg()};$('lebar').value=cfg.lebar;$('lebar').onchange=function(){cfg.lebar=this.value;saveCfg()};
 go('home');
 render();
-(async function(){try{if(!/[?&]shared=1/.test(location.search))return;try{history.replaceState(null,'',location.pathname)}catch(e){}
- var c=await caches.open('dcell-share'),r=await c.match('./shared-image');if(!r){toast('Gambar tidak diterima, coba bagikan lagi',0,3000);return}
- var b=await r.blob();await c.delete('./shared-image');var f=new File([b],'bukti.'+((b.type||'image/png').split('/')[1]||'png'),{type:b.type||'image/png'});
+(async function(){var dariShare=/[?&]shared=1/.test(location.search);try{
+ if(dariShare){try{history.replaceState(null,'',location.pathname)}catch(e){}}
+ if(!('caches' in window)){if(dariShare)toast('Browser tidak mendukung penerimaan gambar',0,4000);return}
+ var c=await caches.open('dcell-share'),r=await c.match(new URL('./shared-image',document.baseURI).href);
+ if(!r){if(dariShare)toast('Gambar tidak diterima, coba bagikan lagi',0,3500);return}
+ var b=await r.blob();await c.delete(new URL('./shared-image',document.baseURI).href);
+ var f=new File([b],'bukti.'+((b.type||'image/png').split('/')[1]||'png'),{type:b.type||'image/png'});
  var o=document.createElement('div');o.id='shp';o.innerHTML='<div class="shs"><h3>Cetak gambar ini sebagai</h3><button data-t="transfer">Bukti Transfer</button><button data-t="token">Token Listrik</button><button data-t="tagihan">Tagihan</button><button class="x" data-t="">Batal</button></div>';
- o.onclick=function(e){var t=e.target.dataset&&e.target.dataset.t;if(t===undefined&&e.target!==o)return;o.remove();if(t)handleImg(f,t)};document.body.appendChild(o)}catch(e){}})();
+ o.onclick=function(e){var t=e.target.dataset&&e.target.dataset.t;if(t===undefined&&e.target!==o)return;o.remove();if(t)handleImg(f,t)};document.body.appendChild(o)}catch(e){toast('Gagal menerima gambar: '+((e&&e.message)||e),0,4000)}})();
 try{if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(function(){})}catch(e){}
 })();
 </script>
