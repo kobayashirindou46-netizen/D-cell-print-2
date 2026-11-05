@@ -301,17 +301,137 @@ body{background:linear-gradient(color-mix(in srgb,var(--bg) 35%,transparent),col
 
 <script>
 var DCParse=(function(){
-var BANKS=['BRI','BNI','Mandiri','BCA','BSI','BTN','CIMB','Permata','Danamon','Panin','OCBC','Maybank','SeaBank','Jago','Jenius','BTPN','Muamalat','Mega','BJB','Neo','Allo','Blu','Sultra','FLIP'];
-var STRONG=['BRI','BNI','BCA','BSI','BTN','CIMB','Mandiri','Permata','Danamon','Panin','OCBC','Maybank','SeaBank','Jenius','BTPN','Muamalat','BJB','FLIP'];
+var BANKDB=[
+['BANK BCA SYARIAH',['BCA Syariah','Bank BCA Syariah'],1],
+['BANK BNI SYARIAH',['BNI Syariah'],1],
+['BANK BTPN SYARIAH',['BTPN Syariah'],1],
+['BANK MEGA SYARIAH',['Mega Syariah'],1],
+['BANK VICTORIA SYARIAH',['Victoria Syariah'],1],
+['BANK PANIN DUBAI SYARIAH',['Panin Dubai Syariah','Panin Syariah'],1],
+['BANK SYARIAH BUKOPIN',['Syariah Bukopin','KB Bukopin Syariah','KB Syariah'],1],
+['BANK JABAR BANTEN SYARIAH',['BJB Syariah','Jabar Banten Syariah'],1],
+['BANK NTB SYARIAH',['NTB Syariah','BPD NTB','Bank NTB'],0],
+['BANK ACEH SYARIAH',['Aceh Syariah','Bank Aceh','BPD Aceh'],0],
+['BANK RIAU KEPRI SYARIAH',['BRK Syariah','Riau Kepri','Bank Riau','BRK'],0],
+['BANK SUMSEL BABEL',['Sumsel Babel','Bank Sumsel','BPD Sumsel'],0],
+['BANK SULSELBAR',['Sulselbar','Sulsel Bar','BPD Sulsel'],0],
+['BANK SULUTGO',['SulutGo','Sulut Go','Bank Sulut','BPD Sulut'],0],
+['BANK KALTIMTARA',['Kaltimtara','Kaltim Tara','Bank Kaltim','BPD Kaltim'],0],
+['BANK KALSEL',['Kalsel','Bank Kalsel','BPD Kalsel','Bank Kalimantan Selatan'],0],
+['BANK KALTENG',['Kalteng','Bank Kalteng','BPD Kalteng'],0],
+['BANK KALBAR',['Kalbar','Bank Kalbar','BPD Kalbar'],0],
+['BANK SULTRA',['Bank Sultra','BPD Sultra'],0],
+['BANK SULTENG',['Bank Sulteng','BPD Sulteng'],0],
+['BANK NAGARI',['Nagari','Bank Sumbar','BPD Sumbar'],0],
+['BANK SUMUT',['Bank Sumut','BPD Sumut','Sumut'],0],
+['BANK JAMBI',['Bank Jambi','BPD Jambi'],0],
+['BANK BENGKULU',['Bank Bengkulu','BPD Bengkulu'],0],
+['BANK LAMPUNG',['Bank Lampung','BPD Lampung'],0],
+['BANK BANTEN',['Bank Banten','BPD Banten'],0],
+['BANK DKI',['Bank DKI','BPD DKI','DKI'],0],
+['BANK JATENG',['Bank Jateng','Bank Jawa Tengah','BPD Jateng','Jateng'],0],
+['BANK JATIM',['Bank Jatim','Bank Jawa Timur','BPD Jatim','Jatim'],0],
+['BANK BPD DIY',['BPD DIY','Bank DIY','Bank BPD DIY'],0],
+['BANK BPD BALI',['BPD Bali','Bank Bali'],0],
+['BANK NTT',['Bank NTT','BPD NTT'],0],
+['BANK PAPUA',['Bank Papua','BPD Papua'],0],
+['BANK MALUKU MALUT',['Maluku Malut','Bank Maluku','Bank Malut'],0],
+['BANK BJB',['BJB','Bank BJB','Bank Jabar'],1],
+['BANK MANDIRI TASPEN',['Mandiri Taspen','Bank Mandiri Taspen'],1],
+['BANK NEO COMMERCE',['Neo Commerce','Bank Neo Commerce','BNC','Bank Neo','Neo Bank','NEO'],0],
+['ALLO BANK',['Allo Bank','Bank Allo','Allo'],0],
+['BLU BY BCA DIGITAL',['blu by BCA Digital','BCA Digital','blu'],0],
+['SEABANK',['SeaBank','Sea Bank','Bank Sea','Bank Seabank','Seabank Indonesia'],1],
+['BANK JAGO',['Bank Jago','Jago','Jago Syariah'],1],
+['JENIUS',['Jenius'],1],
+['BANK BTPN',['Bank BTPN','BTPN','Tabungan Pensiunan Nasional'],1],
+['BANK RAYA',['Bank Raya','Raya Indonesia','BRI Raya','Raya'],0],
+['BANK BRI AGRO',['BRI Agro','BRI Agroniaga','Agroniaga'],1],
+['BANK BRI',['BRI','BRImo','BRI Mo','Bank Rakyat Indonesia','Rakyat Indonesia','BRI Virtual'],1],
+['BANK BNI',['BNI','BNI Mobile','Bank Negara Indonesia','Negara Indonesia'],1],
+['MANDIRI',['Mandiri','Livin','Bank Mandiri','Bank Mandiri Persero','Livin Mandiri'],1],
+['BANK BCA',['BCA','Bank Central Asia','Central Asia','BCA Mobile','m-BCA','mBCA','KlikBCA'],1],
+['BANK BSI',['BSI','Bank Syariah Indonesia','Syariah Indonesia','BSI Mobile'],1],
+['BANK BTN',['BTN','Bank Tabungan Negara','Tabungan Negara','BTN Mobile'],1],
+['CIMB NIAGA',['CIMB Niaga','CIMB','Bank CIMB','OCTO','Bank Niaga'],1],
+['PERMATA',['Permata','PermataBank','Bank Permata','PermataMobile'],1],
+['DANAMON',['Danamon','Bank Danamon'],1],
+['PANIN',['Panin','Panin Bank','Bank Panin','PaninBank'],1],
+['OCBC NISP',['OCBC NISP','OCBC','Bank OCBC','NISP','Bank NISP'],1],
+['MAYBANK',['Maybank','May Bank','Bank Maybank','Maybank Indonesia'],1],
+['BANK MUAMALAT',['Muamalat','Bank Muamalat'],1],
+['BANK MEGA',['Bank Mega','Mega','Bank Mega Persero'],0],
+['BANK SINARMAS',['Sinarmas','Bank Sinarmas','Sinar Mas'],0],
+['BANK UOB',['UOB','Bank UOB','UOB Indonesia','United Overseas'],1],
+['BANK DBS',['DBS','Bank DBS','DBS Indonesia','digibank'],0],
+['HSBC',['HSBC','Bank HSBC'],1],
+['STANDARD CHARTERED',['Standard Chartered','StanChart','Stanchart','SCB'],1],
+['CITIBANK',['Citibank','Citi Bank','Bank Citi'],1],
+['BANK COMMONWEALTH',['Commonwealth','Bank Commonwealth','Commbank'],0],
+['BANK ANZ',['ANZ','Bank ANZ','ANZ Panin'],0],
+['BANK MAYAPADA',['Mayapada','Bank Mayapada'],0],
+['KB BUKOPIN',['KB Bukopin','Bukopin','Bank Bukopin','KB Bank','KB Kookmin','Kookmin','Bank KB'],1],
+['BANK WOORI SAUDARA',['Woori Saudara','Bank Woori','Woori','Bank Saudara','Saudara','BWS'],0],
+['BANK SHINHAN',['Shinhan','Bank Shinhan'],0],
+['BANK KEB HANA',['KEB Hana','Bank Hana','Hana Bank','Hana'],0],
+['BANK ICBC',['ICBC','Bank ICBC','ICBC Indonesia'],0],
+['BANK CCB INDONESIA',['CCB Indonesia','China Construction','Bank CCB','Bank Windu','Windu Kentjana'],1],
+['BANK OF CHINA',['Bank of China','BOC Indonesia','Bank BOC'],1],
+['BANK MIZUHO',['Mizuho','Bank Mizuho'],0],
+['BANK SMBC INDONESIA',['SMBC','Sumitomo','BTPN SMBC'],0],
+['BANK MUFG',['MUFG','Mitsubishi UFJ','Bank MUFG'],0],
+['BANK VICTORIA',['Victoria','Bank Victoria','Victoria International'],0],
+['BANK ARTHA GRAHA',['Artha Graha','Bank Artha Graha','Arthagraha'],1],
+['BANK INA PERDANA',['Ina Perdana','Bank Ina'],0],
+['BANK INDEX SELINDO',['Index Selindo','Bank Index'],0],
+['BANK CAPITAL',['Bank Capital','Capital Indonesia'],0],
+['BANK QNB INDONESIA',['QNB','Bank QNB','QNB Indonesia','QNB Kesawan','Kesawan'],1],
+['BANK MESTIKA',['Mestika','Bank Mestika','Mestika Dharma'],0],
+['BANK MASPION',['Maspion','Bank Maspion'],0],
+['BANK GANESHA',['Ganesha','Bank Ganesha'],0],
+['BANK MNC',['Bank MNC','MNC Bank','MNC Internasional','Bank Bumiputera'],0],
+['BANK SAHABAT SAMPOERNA',['Sahabat Sampoerna','Bank Sampoerna','Sampoerna'],0],
+['BANK AMAR',['Bank Amar','Amar Indonesia','Tunaiku','Amar Bank'],0],
+['BANK ALADIN SYARIAH',['Aladin Syariah','Bank Aladin','Aladin'],0],
+['BANK NOBU',['Nobu','Bank Nobu','Nationalnobu','National Nobu'],0],
+['BANK OKE INDONESIA',['Bank Oke','Oke Indonesia','OK Bank','Oke Bank'],0],
+['BANK HARDA',['Harda','Bank Harda','Harda Internasional'],0],
+['BANK FAMA',['Fama','Bank Fama','Fama Internasional'],0],
+['BANK JASA JAKARTA',['Jasa Jakarta','Bank Jasa Jakarta'],0],
+['BANK BUMI ARTA',['Bumi Arta','Bank Bumi Arta'],0],
+['BANK ROYAL',['Bank Royal','Royal Indonesia'],0],
+['BANK MULTIARTA SENTOSA',['Multiarta Sentosa','Bank MAS','Multi Arta Sentosa'],1],
+['BANK MITRANIAGA',['Mitraniaga','Bank Mitraniaga'],0],
+['BANK YUDHA BHAKTI',['Yudha Bhakti','Bank Yudha'],0],
+['BANK PRIMA MASTER',['Prima Master','Bank Prima'],0],
+['BANK SINAR HARAPAN BALI',['Sinar Harapan Bali','Bank Sinar'],0],
+['BANK CNB',['Centratama','Bank CNB','Centratama Nasional'],0],
+['BANK SAQU',['Saqu','Bank Saqu','Bank Digital Saqu'],0],
+['BANK DIGITAL BCA',['Bank Digital BCA'],1],
+['LINE BANK',['Line Bank','LINE Bank','KB Digital'],1],
+['SUPERBANK',['Superbank','Super Bank'],1],
+['HIBANK',['Hibank','Hi Bank','Bank Hibank'],1],
+['FLIP',['FLIP','Flip.id','Flip id'],1]];
+function bre(a){return a.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/\s+/g,'\\s*')}
+var BKRE=BANKDB.map(function(e){var al=e[1].slice().sort(function(a,b){return b.length-a.length});
+ var src=al.map(bre).join('|');
+ return {d:e[0],s:e[2],a:new RegExp('(?:^|[^A-Za-z0-9])(?:'+src+')(?![A-Za-z0-9])','i'),b:new RegExp('(?:^|[^A-Za-z0-9])(?:bank\\s*(?:'+al.map(function(x){return bre(x.replace(/^bank\s+/i,''))}).join('|')+')|(?:'+al.filter(function(x){return /bank/i.test(x)}).concat(['\\u0000']).map(bre).join('|')+'))(?![A-Za-z0-9])','i')}});
+var BWORDS={},SWORDS={};
+BANKDB.forEach(function(e){e[1].forEach(function(a){if(/^[A-Za-z0-9\-]+$/.test(a)){BWORDS[a.toLowerCase()]=1;if(e[2])SWORDS[a.toLowerCase()]=1}})});
+var BANKS=Object.keys(BWORDS);
+
 var WALLETS=['DANA','OVO','GoPay','ShopeePay','LinkAja','iSaku'];
 var STOP=/\b(bank|rekening|rek|nomor|nominal|rp|idr|rupiah|jumlah|total|biaya|admin|berhasil|sukses|transfer|transaksi|tanggal|waktu|status|pengirim|penerima|sumber|tujuan|keterangan|catatan|berita|referensi|bukti|detail|saldo|virtual|akun|kode|metode|pembayaran|selesai|bagikan|simpan|unduh|share|mobile|banking|aplikasi|layanan|tagihan|pelanggan|meter|token|listrik|wallet|ewallet|dompet|digital|telepon|nama|hubungi|terima|kasih|gagal|pending|diproses|lihat|kembali|beranda|menu|januari|februari|maret|april|mei|juni|juli|agustus|september|oktober|november|desember|wib|wita|wit)\b/i;
 var FZ={e:'[e3]',i:'[il1!|]',l:'[l1i|]',o:'[o0]',a:'[a4]',s:'[s5]',b:'[b8]'};
 function num(s){return parseInt(String(s||'').replace(/\D/g,''),10)||0}
 function getLines(tx){return String(tx||'').split(/\n/).map(function(x){return x.replace(/\s+/g,' ').trim()}).filter(Boolean)}
-function findIn(str){for(var i=0;i<BANKS.length;i++){if(new RegExp('\\b'+BANKS[i]+'\\b','i').test(str))return BANKS[i]}return ''}
+function findIn(str){str=String(str||'');if(!str)return '';
+ var short=str.replace(/[^A-Za-z0-9 ]/g,' ').trim().split(/\s+/).length<=4,i;
+ for(i=0;i<BKRE.length;i++){var e=BKRE[i];if(e.s?e.a.test(str):(e.b.test(str)||(short&&e.a.test(str))))return e.d}
+ return ''}
 function findW(str){var R=[['DANA',/\bdana\b/i],['OVO',/\bovo\b/i],['GoPay',/go\s?-?pay/i],['ShopeePay',/shopee\s?-?pay/i],['LinkAja',/link\s?-?aja/i],['iSaku',/\bi\s?-?saku\b/i]];for(var i=0;i<R.length;i++)if(R[i][1].test(str))return R[i][0];return ''}
-function isBank(w){w=String(w).toLowerCase();return BANKS.some(function(b){return b.toLowerCase()===w})}
-function isStrong(w){w=String(w).toLowerCase();return STRONG.some(function(b){return b.toLowerCase()===w})}
+function isBank(w){return !!BWORDS[String(w).toLowerCase()]}
+function isStrong(w){return !!SWORDS[String(w).toLowerCase()]}
 // label dengan toleransi salah baca OCR (penerima -> pener1ma, dst)
 function fzw(w){return w.length<=3?w:w.replace(/[a-z]/g,function(c){return FZ[c]||c})}
 function L(s){return s.split('|').map(function(p){return p.split(' ').map(fzw).join('\\s+')}).join('|')}
@@ -377,7 +497,7 @@ function transfer(tx){
  var bank=findIn(pick('bank\\s+tujuan|bank\\s+penerima'));
  if(!bank&&pni>=0)bank=findIn(lines.slice(pni,pni+3).join(' '))||findIn(lines.slice(Math.max(0,pni-1),pni).join(' '));
  if(!bank)bank=findIn(pick('tujuan'))||findIn(tx);
- bank=bank.toUpperCase().replace(/^(?=[A-Z]{2,5}$)/,'BANK ');
+ bank=bank.toUpperCase();
  return {penerima:pn?pn.v:'',pengirim:pg?pg.v:'',how:pn?pn.how:'',norek:rk.length>=8?rk:'',tujuan:bank,sumber:findIn(pick('sumber\\s+dana|bank\\s+pengirim|bank\\s+asal|dari')).toUpperCase()}}
 
 function name(tx,srcs){var r=labeled(getLines(tx),srcs);return r?r:null}
@@ -432,7 +552,7 @@ return {extract:extract,transfer:transfer,getLines:getLines,WALLETS:WALLETS,fix:
 </script>
 <script>
 var DCAI=(function(){
-var AIK={transfer:'penerima (nama pemilik rekening tujuan / nama penerima saja, tanpa kata sapaan atau label seperti Nasabah, Bapak, Ibu, Tn, Ny), nominal (jumlah transfer, angka bulat tanpa titik, tanpa biaya admin), norek (nomor rekening/tujuan, hanya angka), tujuan (nama bank tujuan, mis. BANK BCA)',
+var AIK={transfer:'penerima (nama pemilik rekening tujuan / nama penerima saja, tanpa kata sapaan atau label seperti Nasabah, Bapak, Ibu, Tn, Ny), nominal (jumlah transfer, angka bulat tanpa titik, tanpa biaya admin), norek (nomor rekening/tujuan, hanya angka), tujuan (nama bank tujuan, bank apa pun di Indonesia termasuk bank digital/BPD/syariah, mis. BANK BCA, SEABANK, BANK JAGO, BANK DKI)',
  token:'token (20 digit token listrik, hanya angka), meter (nomor meter/ID pelanggan, hanya angka), nm (nama pelanggan), tarif (tarif/daya, mis. R1/900VA), kwh (jumlah kWh), nominal (nominal pembelian, angka bulat)',
  tagihan:'jenis (jenis tagihan, mis. PDAM/BPJS), idp (nomor pelanggan), nm (nama pelanggan), periode (periode tagihan), nominal (total tagihan, angka bulat)',
  ewallet:'wallet (nama e-wallet tujuan, salah satu: DANA, OVO, GoPay, ShopeePay, LinkAja, iSaku), hp (nomor tujuan, hanya angka), nm (nama pemilik akun), nominal (nominal top up, angka bulat tanpa biaya admin)'};

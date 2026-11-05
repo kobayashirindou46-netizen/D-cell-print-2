@@ -1,6 +1,6 @@
 // Service worker D'CELL PRINT: cache halaman & ikon agar bisa dibuka tanpa internet.
 // Naikkan angka VERSI setiap kali index.html diganti supaya pembaruan terpasang.
-const VERSI='dcell-v43',FILES=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./maskable-512.png','./apple-touch-icon.png','./bg.jpg'];
+const VERSI='dcell-v44',FILES=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./maskable-512.png','./apple-touch-icon.png','./bg.jpg'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(VERSI).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(n=>n!==VERSI&&n!=='dcell-share').map(n=>caches.delete(n)))).then(()=>self.clients.claim()))});
 self.addEventListener('fetch',e=>{
