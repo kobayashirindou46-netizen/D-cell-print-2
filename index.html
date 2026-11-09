@@ -225,6 +225,18 @@ body{background:linear-gradient(color-mix(in srgb,var(--bg) 35%,transparent),col
 .hdel .i{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .hall{display:block;margin:6px auto 0;border:1px solid #dc262655;background:color-mix(in srgb,var(--surf) 90%,transparent);color:#dc2626;font:inherit;font-weight:600;font-size:13px;padding:10px 16px;border-radius:10px;min-height:42px}
 @media print{.hdel,.hall{display:none!important}}
+
+#btp{position:fixed;inset:0;z-index:40;background:#0f172a73;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center}
+.btp-s{width:100%;max-width:520px;background:var(--surf);color:var(--ink);border-radius:24px 24px 0 0;padding:20px 16px calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:10px;box-shadow:0 -12px 40px #0f172a40;animation:btpUp .22s ease-out}
+@keyframes btpUp{from{transform:translateY(30px);opacity:0}}
+@media (prefers-reduced-motion:reduce){.btp-s{animation:none}}
+.btp-h{display:flex;flex-direction:column;gap:2px;padding:0 4px 6px}.btp-h b{font-size:18px}.btp-h small{color:var(--mut)}
+.btp-i{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;border-radius:16px;padding:12px 14px;min-height:60px}
+.btp-i:active{border-color:var(--pri)}
+.btp-ic{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:color-mix(in srgb,var(--pri) 14%,var(--surf));color:var(--pri);flex:none}
+.btp-t{display:flex;flex-direction:column;min-width:0}.btp-t b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.btp-t small{color:var(--mut)}
+.btp-n{border:0;border-radius:16px;background:var(--pri);color:#fff;font:inherit;font-weight:700;min-height:50px}
+.btp-x{border:0;background:none;color:var(--mut);font:inherit;font-weight:600;min-height:44px}
 </style></head><body>
 <div id="splash" role="status"><img src="icon-512.png" alt=""><b>Welcome D'CELL</b><small>Gerai Transaksi Online</small></div>
 <script>setTimeout(function(){var e=document.getElementById('splash');if(e){e.classList.add('off');setTimeout(function(){e.remove()},700)}},1800);document.getElementById('splash').onclick=function(){this.classList.add('off')}</script><svg xmlns="http://www.w3.org/2000/svg" style="display:none">
@@ -891,10 +903,22 @@ function bands(c,th){th=th||150;var W=c.width,H=c.height,a=c.getContext('2d').ge
  for(var y0=0;y0<H;y0+=128){var h=Math.min(128,H-y0),o=new Uint8Array(8+wb*h);o.set([0x1D,0x76,0x30,0,wb&255,wb>>8,h&255,h>>8],0);
   for(var j=0;j<h;j++)for(var k=0;k<wb;k++){var v=0;for(var q=0;q<8;q++){var i=((y0+j)*W+k*8+q)*4;if(a[i]*.3+a[i+1]*.59+a[i+2]*.11<th)v|=0x80>>q}o[8+j*wb+k]=v}out.push(o)}return out}
 var btC=null,btD=null,SV=['000018f0-0000-1000-8000-00805f9b34fb','0000ff00-0000-1000-8000-00805f9b34fb','e7810a71-73ae-499d-8c15-faa9aef0c3f2','49535343-fe7d-4ae5-8fa9-9fafd205e455'];
-async function btConn(){if(btC&&btD&&btD.gatt.connected)return btC;
- btD=await navigator.bluetooth.requestDevice({acceptAllDevices:true,optionalServices:SV});var sv=await btD.gatt.connect(),ss=await sv.getPrimaryServices();
- for(var i=0;i<ss.length;i++){var cs=await ss[i].getCharacteristics();for(var j=0;j<cs.length;j++){if(cs[j].properties.write||cs[j].properties.writeWithoutResponse){btC=cs[j];return btC}}}
+async function btFind(d){var sv=await d.gatt.connect(),ss=await sv.getPrimaryServices();
+ for(var i=0;i<ss.length;i++){var cs=await ss[i].getCharacteristics();for(var j=0;j<cs.length;j++){if(cs[j].properties.write||cs[j].properties.writeWithoutResponse){btD=d;btC=cs[j];return btC}}}
  throw new Error('Printer tidak menyediakan jalur cetak yang dikenali')}
+function btPick(list){return new Promise(function(res){var o=document.createElement('div');o.id='btp';var last='';try{last=localStorage.getItem('btLast')||''}catch(e){}
+ var h='<div class="btp-s" role="dialog" aria-label="Pilih printer"><div class="btp-h"><b>Pilih printer</b><small>Printer yang pernah terhubung</small></div>';
+ list.forEach(function(d,i){h+='<button class="btp-i" data-i="'+i+'"><span class="btp-ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6M6 17H4a1 1 0 0 1-1-1v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a1 1 0 0 1-1 1h-2M6 14h12v7H6z"/></svg></span><span class="btp-t"><b></b><small>'+(d.name&&d.name===last?'Terakhir dipakai':'Tersimpan')+'</small></span></button>'});
+ h+='<button class="btp-n" data-i="new">Cari printer baru</button><button class="btp-x" data-i="x">Batal</button></div>';o.innerHTML=h;
+ o.querySelectorAll('.btp-i b').forEach(function(e,i){e.textContent=list[i].name||'Printer tanpa nama'});
+ function end(v){o.remove();res(v)}
+ o.onclick=function(e){var b=e.target.closest('button');if(b){var i=b.dataset.i;end(i==='new'?'new':i==='x'?null:list[+i])}else if(e.target===o)end(null)};
+ document.body.appendChild(o)})}
+async function btConn(){if(btC&&btD&&btD.gatt.connected)return btC;
+ var known=[];try{if(navigator.bluetooth.getDevices)known=await navigator.bluetooth.getDevices()}catch(e){}
+ if(known.length){var p=await btPick(known);if(!p)throw new Error('dibatalkan');
+  if(p!=='new'){try{toast('Menghubungkan ke '+(p.name||'printer')+'...',1);var r=await btFind(p);try{localStorage.setItem('btLast',p.name||'')}catch(e){}return r}catch(e){toast('Gagal terhubung, buka daftar perangkat...',0,2000)}}}
+ var d=await navigator.bluetooth.requestDevice({acceptAllDevices:true,optionalServices:SV});var r2=await btFind(d);try{localStorage.setItem('btLast',d.name||'')}catch(e){}return r2}
 async function btPrint(){
  if(!navigator.bluetooth){sysPrint();return}
  try{var ch=await btConn();toast('Mengirim ke printer...',1);var cv=await paint(+cfg.lebar||384),parts=[new Uint8Array([0x1B,0x40,0x1B,0x37,11,[80,120,160][+cfg.tebal||0],2])].concat(bands(cv,[150,190,215][+cfg.tebal||0]),[new Uint8Array([0x0A,0x0A,0x0A,0x0A])]);
